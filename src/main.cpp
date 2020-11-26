@@ -176,25 +176,38 @@ void do_send(osjob_t *j)
     // Next TX is scheduled after TX_COMPLETE event.
 }
 
-void SaveLMICToRTC()
+void SaveLMICToRTC(int deepsleep_sec)
 {
     RTC_LMIC = LMIC;
+
+    // ESP32 can't track millis during DeepSleep and no option to advanced millis after DeepSleep.
+    // Therefore reset DutyCyles
+
+    unsigned long now = millis();
+
+    // EU Like Bands
+#if defined(CFG_LMIC_EU_like)
+    for(int i = 0; i < MAX_BANDS; i++) {
+        ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
+        if(correctedAvail < 0) {
+            correctedAvail = 0;
+        }
+        RTC_LMIC.bands[i].avail = correctedAvail;
+    }
+
+    RTC_LMIC.globalDutyAvail = RTC_LMIC.globalDutyAvail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
+    if(RTC_LMIC.globalDutyAvail < 0) 
+    {
+        RTC_LMIC.globalDutyAvail = 0;
+    }
+#else
+    Serial.println("No DutyCycle recalculation function!")
+#endif
 }
 
 void LoadLMICFromRTC()
 {
     LMIC = RTC_LMIC;
-
-    // ESP32 can'*'t track millis during DeepSleep and no option to advanced millis after DeepSleep.
-    // Therefore reset DutyCyles
-    // Respect Fair Access Policy and Maximum Duty Cycle
-    // https://www.thethingsnetwork.org/docs/lorawan/duty-cycle.html
-    // https://www.loratools.nl/#/airtime
-    for (u1_t bi = 0; bi < MAX_BANDS; bi++)
-    {
-        LMIC.bands[bi].avail = 0;
-    }
-    LMIC.globalDutyAvail = 0;
 }
 
 void GoDeepSleep()
@@ -234,7 +247,7 @@ void loop()
 
     if (!os_queryTimeCriticalJobs(ms2osticksRound((TX_INTERVAL * 1000))) && GOTO_DEEPSLEEP == true)
     {
-        SaveLMICToRTC();
+        SaveLMICToRTC(TX_INTERVAL);
         GoDeepSleep();
     }
     else if (lastPrintTime + 1000 < millis())
