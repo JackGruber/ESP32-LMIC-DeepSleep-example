@@ -48,6 +48,18 @@ void PrintRuntime()
     Serial.println(" seconds");
 }
 
+void PrintLMICVersion()
+{
+    Serial.print(F("LMIC: "));
+    Serial.print(ARDUINO_LMIC_VERSION_GET_MAJOR(ARDUINO_LMIC_VERSION));
+    Serial.print(F("."));
+    Serial.print(ARDUINO_LMIC_VERSION_GET_MINOR(ARDUINO_LMIC_VERSION));
+    Serial.print(F("."));
+    Serial.print(ARDUINO_LMIC_VERSION_GET_PATCH(ARDUINO_LMIC_VERSION));
+    Serial.print(F("."));
+    Serial.println(ARDUINO_LMIC_VERSION_GET_LOCAL(ARDUINO_LMIC_VERSION));
+}
+
 void onEvent(ev_t ev)
 {
     Serial.print(os_getTime());
@@ -232,6 +244,7 @@ void setup()
     Serial.begin(115200);
 
     Serial.println(F("Starting DeepSleep test"));
+    PrintLMICVersion();
 
     // LMIC init
     os_init();
