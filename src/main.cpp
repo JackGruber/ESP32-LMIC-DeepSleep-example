@@ -311,6 +311,7 @@ void SaveLMICToRTC(int deepsleep_sec)
 
 void LoadLMICFromRTC()
 {
+    Serial.println(F("Load LMIC from RTC"));
     LMIC = RTC_LMIC;
 }
 
