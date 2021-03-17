@@ -40,6 +40,14 @@ const lmic_pinmap lmic_pins = {
     .dio = {PIN_LMIC_DIO0, PIN_LMIC_DIO1, PIN_LMIC_DIO2},
 };
 
+void PrintRuntime()
+{
+    long seconds = millis() / 1000;
+    Serial.print("Runtime: ");
+    Serial.print(seconds);
+    Serial.println(" seconds");
+}
+
 void onEvent(ev_t ev)
 {
     Serial.print(os_getTime());
@@ -213,6 +221,7 @@ void LoadLMICFromRTC()
 void GoDeepSleep()
 {
     Serial.println(F("Go DeepSleep"));
+    PrintRuntime();
     Serial.flush();
     esp_sleep_enable_timer_wakeup(TX_INTERVAL * 1000000);
     esp_deep_sleep_start();
@@ -253,6 +262,7 @@ void loop()
     else if (lastPrintTime + 1000 < millis())
     {
         Serial.println(F("Cannot sleep"));
+        PrintRuntime();
         lastPrintTime = millis();
     }
 }
