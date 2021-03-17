@@ -305,7 +305,7 @@ void SaveLMICToRTC(int deepsleep_sec)
         RTC_LMIC.globalDutyAvail = 0;
     }
 #else
-    Serial.println("No DutyCycle recalculation function!")
+    Serial.println(F("No DutyCycle recalculation function!"));
 #endif
 }
 
