@@ -272,7 +272,7 @@ void loop()
         SaveLMICToRTC(TX_INTERVAL);
         GoDeepSleep();
     }
-    else if (lastPrintTime + 1000 < millis())
+    else if (lastPrintTime + 2000 < millis())
     {
         Serial.println(F("Cannot sleep"));
         PrintRuntime();
