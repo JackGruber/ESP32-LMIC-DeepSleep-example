@@ -280,6 +280,7 @@ void do_send(osjob_t *j)
 
 void SaveLMICToRTC(int deepsleep_sec)
 {
+    Serial.println(F("Save LMIC to RTC"));
     RTC_LMIC = LMIC;
 
     // ESP32 can't track millis during DeepSleep and no option to advanced millis after DeepSleep.
@@ -289,6 +290,7 @@ void SaveLMICToRTC(int deepsleep_sec)
 
     // EU Like Bands
 #if defined(CFG_LMIC_EU_like)
+    Serial.println(F("Reset CFG_LMIC_EU_like band avail"));
     for(int i = 0; i < MAX_BANDS; i++) {
         ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
         if(correctedAvail < 0) {
