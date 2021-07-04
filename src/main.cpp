@@ -21,7 +21,7 @@ static osjob_t sendjob;
 // Respect Fair Access Policy and Maximum Duty Cycle!
 // https://www.thethingsnetwork.org/docs/lorawan/duty-cycle.html
 // https://www.loratools.nl/#/airtime
-const unsigned TX_INTERVAL = 300;
+const unsigned TX_INTERVAL = 30;
 
 // Saves the LMIC structure during DeepSleep
 RTC_DATA_ATTR lmic_t RTC_LMIC;
@@ -407,7 +407,7 @@ void loop()
     os_runloop_once();
 
     const bool timeCriticalJobs = os_queryTimeCriticalJobs(ms2osticksRound((TX_INTERVAL * 1000)));
-    if (!timeCriticalJobs && GOTO_DEEPSLEEP == true)
+    if (!timeCriticalJobs && GOTO_DEEPSLEEP == true && !(LMIC.opmode & OP_TXRXPEND))
     {
         Serial.print(F("Can go sleep "));
         LoraWANPrintLMICOpmode();
