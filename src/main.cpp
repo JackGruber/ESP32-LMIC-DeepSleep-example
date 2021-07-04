@@ -40,6 +40,108 @@ const lmic_pinmap lmic_pins = {
     .dio = {PIN_LMIC_DIO0, PIN_LMIC_DIO1, PIN_LMIC_DIO2},
 };
 
+// opmode def
+// https://github.com/mcci-catena/arduino-lmic/blob/89c28c5888338f8fc851851bb64968f2a493462f/src/lmic/lmic.h#L233
+void LoraWANPrintLMICOpmode(void)
+{
+    Serial.print(F("LMIC.opmode: "));
+    if (LMIC.opmode & OP_NONE){ Serial.print(F("OP_NONE ")); }
+    if (LMIC.opmode & OP_SCAN){ Serial.print(F("OP_SCAN ")); }
+    if (LMIC.opmode & OP_TRACK){ Serial.print(F("OP_TRACK ")); }
+    if (LMIC.opmode & OP_JOINING){ Serial.print(F("OP_JOINING ")); }
+    if (LMIC.opmode & OP_TXDATA){ Serial.print(F("OP_TXDATA ")); }
+    if (LMIC.opmode & OP_POLL){ Serial.print(F("OP_POLL ")); }
+    if (LMIC.opmode & OP_REJOIN){ Serial.print(F("OP_REJOIN ")); }
+    if (LMIC.opmode & OP_SHUTDOWN){ Serial.print(F("OP_SHUTDOWN ")); }
+    if (LMIC.opmode & OP_TXRXPEND){ Serial.print(F("OP_TXRXPEND ")); }
+    if (LMIC.opmode & OP_RNDTX){ Serial.print(F("OP_RNDTX ")); }
+    if (LMIC.opmode & OP_PINGINI){ Serial.print(F("OP_PINGINI ")); }
+    if (LMIC.opmode & OP_PINGABLE){ Serial.print(F("OP_PINGABLE ")); }
+    if (LMIC.opmode & OP_NEXTCHNL){ Serial.print(F("OP_NEXTCHNL ")); }
+    if (LMIC.opmode & OP_LINKDEAD){ Serial.print(F("OP_LINKDEAD ")); }
+    if (LMIC.opmode & OP_LINKDEAD){ Serial.print(F("OP_LINKDEAD ")); }
+    if (LMIC.opmode & OP_TESTMODE){ Serial.print(F("OP_TESTMODE ")); }
+    if (LMIC.opmode & OP_UNJOIN){ Serial.print(F("OP_UNJOIN ")); }
+    Serial.println("");
+}
+
+void LoraWANDebug(lmic_t lmic_check)
+{
+    Serial.println("");
+    Serial.println("");
+    
+    LoraWANPrintLMICOpmode();
+
+    Serial.print(F("LMIC.seqnoUp = "));
+    Serial.println(lmic_check.seqnoUp); 
+
+    Serial.print(F("LMIC.globalDutyRate = "));
+    Serial.print(lmic_check.globalDutyRate);
+    Serial.print(F(" osTicks, "));
+    Serial.print(osticks2ms(lmic_check.globalDutyRate)/1000);
+    Serial.println(F(" sec"));
+
+    Serial.print(F("LMIC.globalDutyAvail = "));
+    Serial.print(lmic_check.globalDutyAvail);
+    Serial.print(F(" osTicks, "));
+    Serial.print(osticks2ms(lmic_check.globalDutyAvail)/1000);
+    Serial.println(F(" sec"));
+
+    Serial.print(F("LMICbandplan_nextTx = "));
+    Serial.print(LMICbandplan_nextTx(os_getTime()));
+    Serial.print(F(" osTicks, "));
+    Serial.print(osticks2ms(LMICbandplan_nextTx(os_getTime()))/1000);
+    Serial.println(F(" sec"));
+
+    Serial.print(F("os_getTime = "));
+    Serial.print(os_getTime());
+    Serial.print(F(" osTicks, "));
+    Serial.print(osticks2ms(os_getTime()) / 1000);
+    Serial.println(F(" sec"));
+
+    Serial.print(F("LMIC.txend = "));
+    Serial.println(lmic_check.txend);
+    Serial.print(F("LMIC.txChnl = "));
+    Serial.println(lmic_check.txChnl);
+
+    Serial.println(F("Band \tavail \t\tavail_sec\tlastchnl \ttxcap"));
+    for (u1_t bi = 0; bi < MAX_BANDS; bi++)
+    {
+        Serial.print(bi);
+        Serial.print("\t");
+        Serial.print(lmic_check.bands[bi].avail);
+        Serial.print("\t\t");
+        Serial.print(osticks2ms(lmic_check.bands[bi].avail)/1000);
+        Serial.print("\t\t");
+        Serial.print(lmic_check.bands[bi].lastchnl);
+        Serial.print("\t\t");
+        Serial.println(lmic_check.bands[bi].txcap);
+        
+    }
+    Serial.println("");
+    Serial.println("");
+}
+
+void PrintRuntime()
+{
+    long seconds = millis() / 1000;
+    Serial.print("Runtime: ");
+    Serial.print(seconds);
+    Serial.println(" seconds");
+}
+
+void PrintLMICVersion()
+{
+    Serial.print(F("LMIC: "));
+    Serial.print(ARDUINO_LMIC_VERSION_GET_MAJOR(ARDUINO_LMIC_VERSION));
+    Serial.print(F("."));
+    Serial.print(ARDUINO_LMIC_VERSION_GET_MINOR(ARDUINO_LMIC_VERSION));
+    Serial.print(F("."));
+    Serial.print(ARDUINO_LMIC_VERSION_GET_PATCH(ARDUINO_LMIC_VERSION));
+    Serial.print(F("."));
+    Serial.println(ARDUINO_LMIC_VERSION_GET_LOCAL(ARDUINO_LMIC_VERSION));
+}
+
 void onEvent(ev_t ev)
 {
     Serial.print(os_getTime());
@@ -178,6 +280,7 @@ void do_send(osjob_t *j)
 
 void SaveLMICToRTC(int deepsleep_sec)
 {
+    Serial.println(F("Save LMIC to RTC"));
     RTC_LMIC = LMIC;
 
     // ESP32 can't track millis during DeepSleep and no option to advanced millis after DeepSleep.
@@ -187,34 +290,35 @@ void SaveLMICToRTC(int deepsleep_sec)
 
     // EU Like Bands
 #if defined(CFG_LMIC_EU_like)
-    for (int i = 0; i < MAX_BANDS; i++)
-    {
-        ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now / 1000.0 + deepsleep_sec) * OSTICKS_PER_SEC);
-        if (correctedAvail < 0)
-        {
+    Serial.println(F("Reset CFG_LMIC_EU_like band avail"));
+    for(int i = 0; i < MAX_BANDS; i++) {
+        ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
+        if(correctedAvail < 0) {
             correctedAvail = 0;
         }
         RTC_LMIC.bands[i].avail = correctedAvail;
     }
 
-    RTC_LMIC.globalDutyAvail = RTC_LMIC.globalDutyAvail - ((now / 1000.0 + deepsleep_sec) * OSTICKS_PER_SEC);
-    if (RTC_LMIC.globalDutyAvail < 0)
+    RTC_LMIC.globalDutyAvail = RTC_LMIC.globalDutyAvail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
+    if(RTC_LMIC.globalDutyAvail < 0) 
     {
         RTC_LMIC.globalDutyAvail = 0;
     }
 #else
-    Serial.println("No DutyCycle recalculation function!")
+    Serial.println(F("No DutyCycle recalculation function!"));
 #endif
 }
 
 void LoadLMICFromRTC()
 {
+    Serial.println(F("Load LMIC from RTC"));
     LMIC = RTC_LMIC;
 }
 
 void GoDeepSleep()
 {
     Serial.println(F("Go DeepSleep"));
+    PrintRuntime();
     Serial.flush();
     esp_sleep_enable_timer_wakeup(TX_INTERVAL * 1000000);
     esp_deep_sleep_start();
@@ -225,6 +329,7 @@ void setup()
     Serial.begin(115200);
 
     Serial.println(F("Starting DeepSleep test"));
+    PrintLMICVersion();
 
     // LMIC init
     os_init();
@@ -236,6 +341,8 @@ void setup()
     {
         LoadLMICFromRTC();
     }
+
+    LoraWANDebug(LMIC);
 
     // Start job (sending automatically starts OTAA too)
     do_send(&sendjob);
@@ -252,9 +359,10 @@ void loop()
         SaveLMICToRTC(TX_INTERVAL);
         GoDeepSleep();
     }
-    else if (lastPrintTime + 1000 < millis())
+    else if (lastPrintTime + 2000 < millis())
     {
         Serial.println(F("Cannot sleep"));
+        PrintRuntime();
         lastPrintTime = millis();
     }
 }
