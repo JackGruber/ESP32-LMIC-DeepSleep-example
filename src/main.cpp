@@ -14,7 +14,7 @@ void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
-static uint8_t mydata[] = "Hello, world!";
+static uint8_t mydata[] = "Test";
 static osjob_t sendjob;
 
 // Schedule TX every this many seconds
