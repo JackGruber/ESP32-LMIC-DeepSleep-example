@@ -119,8 +119,9 @@ void LoraWANDebug(lmic_t lmic_check)
 {
     Serial.println("");
     Serial.println("");
-    
+
     LoraWANPrintLMICOpmode();
+    Serial.println("");
 
     Serial.print(F("LMIC.seqnoUp = "));
     Serial.println(lmic_check.seqnoUp);
@@ -405,14 +406,22 @@ void loop()
 
     os_runloop_once();
 
-    if (!os_queryTimeCriticalJobs(ms2osticksRound((TX_INTERVAL * 1000))) && GOTO_DEEPSLEEP == true)
+    const bool timeCriticalJobs = os_queryTimeCriticalJobs(ms2osticksRound((TX_INTERVAL * 1000)));
+    if (!timeCriticalJobs && GOTO_DEEPSLEEP == true)
     {
+        Serial.print(F("Can go sleep "));
+        LoraWANPrintLMICOpmode();
         SaveLMICToRTC(TX_INTERVAL);
         GoDeepSleep();
     }
     else if (lastPrintTime + 2000 < millis())
     {
-        Serial.println(F("Cannot sleep"));
+        Serial.print(F("Cannot sleep "));
+        Serial.print(F("TimeCriticalJobs: "));
+        Serial.print(timeCriticalJobs);
+        Serial.print(" ");
+
+        LoraWANPrintLMICOpmode();
         PrintRuntime();
         lastPrintTime = millis();
     }
