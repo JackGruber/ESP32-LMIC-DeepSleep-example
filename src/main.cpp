@@ -187,16 +187,18 @@ void SaveLMICToRTC(int deepsleep_sec)
 
     // EU Like Bands
 #if defined(CFG_LMIC_EU_like)
-    for(int i = 0; i < MAX_BANDS; i++) {
-        ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
-        if(correctedAvail < 0) {
+    for (int i = 0; i < MAX_BANDS; i++)
+    {
+        ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now / 1000.0 + deepsleep_sec) * OSTICKS_PER_SEC);
+        if (correctedAvail < 0)
+        {
             correctedAvail = 0;
         }
         RTC_LMIC.bands[i].avail = correctedAvail;
     }
 
-    RTC_LMIC.globalDutyAvail = RTC_LMIC.globalDutyAvail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
-    if(RTC_LMIC.globalDutyAvail < 0) 
+    RTC_LMIC.globalDutyAvail = RTC_LMIC.globalDutyAvail - ((now / 1000.0 + deepsleep_sec) * OSTICKS_PER_SEC);
+    if (RTC_LMIC.globalDutyAvail < 0)
     {
         RTC_LMIC.globalDutyAvail = 0;
     }
