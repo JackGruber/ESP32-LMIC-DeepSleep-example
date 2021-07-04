@@ -45,24 +45,74 @@ const lmic_pinmap lmic_pins = {
 void LoraWANPrintLMICOpmode(void)
 {
     Serial.print(F("LMIC.opmode: "));
-    if (LMIC.opmode & OP_NONE){ Serial.print(F("OP_NONE ")); }
-    if (LMIC.opmode & OP_SCAN){ Serial.print(F("OP_SCAN ")); }
-    if (LMIC.opmode & OP_TRACK){ Serial.print(F("OP_TRACK ")); }
-    if (LMIC.opmode & OP_JOINING){ Serial.print(F("OP_JOINING ")); }
-    if (LMIC.opmode & OP_TXDATA){ Serial.print(F("OP_TXDATA ")); }
-    if (LMIC.opmode & OP_POLL){ Serial.print(F("OP_POLL ")); }
-    if (LMIC.opmode & OP_REJOIN){ Serial.print(F("OP_REJOIN ")); }
-    if (LMIC.opmode & OP_SHUTDOWN){ Serial.print(F("OP_SHUTDOWN ")); }
-    if (LMIC.opmode & OP_TXRXPEND){ Serial.print(F("OP_TXRXPEND ")); }
-    if (LMIC.opmode & OP_RNDTX){ Serial.print(F("OP_RNDTX ")); }
-    if (LMIC.opmode & OP_PINGINI){ Serial.print(F("OP_PINGINI ")); }
-    if (LMIC.opmode & OP_PINGABLE){ Serial.print(F("OP_PINGABLE ")); }
-    if (LMIC.opmode & OP_NEXTCHNL){ Serial.print(F("OP_NEXTCHNL ")); }
-    if (LMIC.opmode & OP_LINKDEAD){ Serial.print(F("OP_LINKDEAD ")); }
-    if (LMIC.opmode & OP_LINKDEAD){ Serial.print(F("OP_LINKDEAD ")); }
-    if (LMIC.opmode & OP_TESTMODE){ Serial.print(F("OP_TESTMODE ")); }
-    if (LMIC.opmode & OP_UNJOIN){ Serial.print(F("OP_UNJOIN ")); }
-    Serial.println("");
+    if (LMIC.opmode & OP_NONE)
+    {
+        Serial.print(F("OP_NONE "));
+    }
+    if (LMIC.opmode & OP_SCAN)
+    {
+        Serial.print(F("OP_SCAN "));
+    }
+    if (LMIC.opmode & OP_TRACK)
+    {
+        Serial.print(F("OP_TRACK "));
+    }
+    if (LMIC.opmode & OP_JOINING)
+    {
+        Serial.print(F("OP_JOINING "));
+    }
+    if (LMIC.opmode & OP_TXDATA)
+    {
+        Serial.print(F("OP_TXDATA "));
+    }
+    if (LMIC.opmode & OP_POLL)
+    {
+        Serial.print(F("OP_POLL "));
+    }
+    if (LMIC.opmode & OP_REJOIN)
+    {
+        Serial.print(F("OP_REJOIN "));
+    }
+    if (LMIC.opmode & OP_SHUTDOWN)
+    {
+        Serial.print(F("OP_SHUTDOWN "));
+    }
+    if (LMIC.opmode & OP_TXRXPEND)
+    {
+        Serial.print(F("OP_TXRXPEND "));
+    }
+    if (LMIC.opmode & OP_RNDTX)
+    {
+        Serial.print(F("OP_RNDTX "));
+    }
+    if (LMIC.opmode & OP_PINGINI)
+    {
+        Serial.print(F("OP_PINGINI "));
+    }
+    if (LMIC.opmode & OP_PINGABLE)
+    {
+        Serial.print(F("OP_PINGABLE "));
+    }
+    if (LMIC.opmode & OP_NEXTCHNL)
+    {
+        Serial.print(F("OP_NEXTCHNL "));
+    }
+    if (LMIC.opmode & OP_LINKDEAD)
+    {
+        Serial.print(F("OP_LINKDEAD "));
+    }
+    if (LMIC.opmode & OP_LINKDEAD)
+    {
+        Serial.print(F("OP_LINKDEAD "));
+    }
+    if (LMIC.opmode & OP_TESTMODE)
+    {
+        Serial.print(F("OP_TESTMODE "));
+    }
+    if (LMIC.opmode & OP_UNJOIN)
+    {
+        Serial.print(F("OP_UNJOIN "));
+    }
 }
 
 void LoraWANDebug(lmic_t lmic_check)
@@ -73,24 +123,24 @@ void LoraWANDebug(lmic_t lmic_check)
     LoraWANPrintLMICOpmode();
 
     Serial.print(F("LMIC.seqnoUp = "));
-    Serial.println(lmic_check.seqnoUp); 
+    Serial.println(lmic_check.seqnoUp);
 
     Serial.print(F("LMIC.globalDutyRate = "));
     Serial.print(lmic_check.globalDutyRate);
     Serial.print(F(" osTicks, "));
-    Serial.print(osticks2ms(lmic_check.globalDutyRate)/1000);
+    Serial.print(osticks2ms(lmic_check.globalDutyRate) / 1000);
     Serial.println(F(" sec"));
 
     Serial.print(F("LMIC.globalDutyAvail = "));
     Serial.print(lmic_check.globalDutyAvail);
     Serial.print(F(" osTicks, "));
-    Serial.print(osticks2ms(lmic_check.globalDutyAvail)/1000);
+    Serial.print(osticks2ms(lmic_check.globalDutyAvail) / 1000);
     Serial.println(F(" sec"));
 
     Serial.print(F("LMICbandplan_nextTx = "));
     Serial.print(LMICbandplan_nextTx(os_getTime()));
     Serial.print(F(" osTicks, "));
-    Serial.print(osticks2ms(LMICbandplan_nextTx(os_getTime()))/1000);
+    Serial.print(osticks2ms(LMICbandplan_nextTx(os_getTime())) / 1000);
     Serial.println(F(" sec"));
 
     Serial.print(F("os_getTime = "));
@@ -111,12 +161,11 @@ void LoraWANDebug(lmic_t lmic_check)
         Serial.print("\t");
         Serial.print(lmic_check.bands[bi].avail);
         Serial.print("\t\t");
-        Serial.print(osticks2ms(lmic_check.bands[bi].avail)/1000);
+        Serial.print(osticks2ms(lmic_check.bands[bi].avail) / 1000);
         Serial.print("\t\t");
         Serial.print(lmic_check.bands[bi].lastchnl);
         Serial.print("\t\t");
         Serial.println(lmic_check.bands[bi].txcap);
-        
     }
     Serial.println("");
     Serial.println("");
@@ -291,16 +340,18 @@ void SaveLMICToRTC(int deepsleep_sec)
     // EU Like Bands
 #if defined(CFG_LMIC_EU_like)
     Serial.println(F("Reset CFG_LMIC_EU_like band avail"));
-    for(int i = 0; i < MAX_BANDS; i++) {
-        ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
-        if(correctedAvail < 0) {
+    for (int i = 0; i < MAX_BANDS; i++)
+    {
+        ostime_t correctedAvail = RTC_LMIC.bands[i].avail - ((now / 1000.0 + deepsleep_sec) * OSTICKS_PER_SEC);
+        if (correctedAvail < 0)
+        {
             correctedAvail = 0;
         }
         RTC_LMIC.bands[i].avail = correctedAvail;
     }
 
-    RTC_LMIC.globalDutyAvail = RTC_LMIC.globalDutyAvail - ((now/1000.0 + deepsleep_sec ) * OSTICKS_PER_SEC);
-    if(RTC_LMIC.globalDutyAvail < 0) 
+    RTC_LMIC.globalDutyAvail = RTC_LMIC.globalDutyAvail - ((now / 1000.0 + deepsleep_sec) * OSTICKS_PER_SEC);
+    if (RTC_LMIC.globalDutyAvail < 0)
     {
         RTC_LMIC.globalDutyAvail = 0;
     }
